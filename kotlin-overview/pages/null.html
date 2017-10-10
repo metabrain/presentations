@@ -1,0 +1,72 @@
+<!-- <section>
+On the subject of 'Null Safety'
+
+* Java
+
+	@NonNullable
+	public T go(V param) {
+		T result;
+		if(param!=null) {
+			result = param.method();
+		} else {
+			result = new T();
+		}
+		return result;
+	}
+
+	* Though luck - don't forget to check for possible null references - "requires" defensive programming. 
+
+* Groovy (same, but with Elvis/safe-navigation operator)
+
+	@NonNullable
+	fun T go(V param) {
+		var result = ref?.method()
+
+		return result!=null ? result : new T()
+	}
+
+	* Elvis operator is simply syntatic-sugar for the "defensive java" version above. 
+
+* Kotlin (first attempt!)
+
+	fun go(param: V): T {
+		val result: T = param?.method()
+		return result
+	}
+
+	* T represents all possible _non-null_ values of class (or sub-classes/implementations) of T.
+	* But this is not enough: in Kotlin, the implementation of V::method is required to know if this scenario type-checks!
+		* When interoperating with another JVM language, every "language" border is considered unsafe - in other words, any method which comes from non-Kotlin JVM bytecode is considered null-prone.
+
+		* Example in Java of V
+
+			class V {
+				T method() {
+					// doesnt matter
+				}
+			}
+
+			// Kotlin will only compile with 
+			fun go(param: V): T {
+				val result: T = param?.method() ?: new T() // we can't trust Java, so we need to use the default operator
+				return result
+			}
+
+			* ?: is the 'default' operator in case the left-side expression evaluates to false
+
+			// ...or, for the (very) brave..
+
+			fun go(param: V): T {
+				val result: T = param?.method()! //we can't trust Java... but you can trust me Mr. Type Checker
+				return result
+			}
+
+			* ! is the "trust-me-i-know-the-jvm-interrop-border-is-null-safe-i-programmed-it-myself-many-moons-ago-i-swear" - all bets are off at this point. Yes, AT THIS POINT, if method() returns a null value, the runtime will throw a NPE. 
+
+			* BONUS: Additionaly, if you want to propagate possible null values (there is not good "default" value for example), you can simply use T? which includes all T's plus the null value - even though in this scenario we want non-null Ts only as to emulate the examples in Groovy and Java.
+
+			fun go(param: V): T? {
+				val result: T? = param?.method()
+				return result
+			}
+</section> -->
