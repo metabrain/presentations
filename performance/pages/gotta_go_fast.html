@@ -1,0 +1,561 @@
+<section>
+    <h3>Expert: no GC Java - "off-heap"?</h3>
+    <h3>Or: Can I write C-like Java?</h3>
+    <h3>Or: Java's Stockholm-syndrome</h3>
+	<h3 style="font-size:16px;">example from Martin Thompson: https://mechanical-sympathy.blogspot.co.uk/2012/10/compact-off-heap-structurestuples-in.html</h3>
+</section>
+
+
+<section>
+    <p>WARNING: UNSAFE</p>
+    <pre><code data-trim data-noescape class="java">
+    private static final Unsafe unsafe;
+    static {
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            unsafe = (Unsafe)field.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e); // UPS..
+        }
+    }
+    </code></pre>
+</section>
+<section>
+    <p>BONUS: Oracle does not like Unsafe</p>
+    <img src="dieinafire.png" style="width:110%; background:none; border:none; box-shadow:none;">
+</section>
+
+
+<section>
+    <p>Scenario: Simple Exchange</p>
+    <pre><code data-trim data-noescape class="java">
+    private static void perfRun(final int runNum)
+        init(); // NOTE
+        long buyCost = 0;
+        long sellCost = 0;
+
+        for (int i = 0; i < NUM_RECORDS; i++)
+            final ____ trade = get(i); // NOTE
+            if (trade.getSide() == 'B')
+                buyCost += (trade.getPrice() * trade.getQuantity());
+            else
+                sellCost += (trade.getPrice() * trade.getQuantity());
+
+        destroy()
+        ...
+    </code></pre>
+    <p>The goal is to calculate total bought and total sold (a surprisingly real-world scenario)</p>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - Traditional Java</p>
+    <pre><code data-trim data-noescape class="java">
+    public static void init()
+        trades = new JavaMemoryTrade[NUM_RECORDS]; //normal POJO object
+
+        final byte[] londonStockExchange = {'X', 'L', 'O', 'N'};
+        final int venueCode = pack(londonStockExchange);
+
+        final byte[] billiton = {'B', 'H', 'P'};
+        final int instrumentCode = pack( billiton);
+
+        for (int i = 0; i < NUM_RECORDS; i++)
+            JavaMemoryTrade trade = new JavaMemoryTrade();
+            trades[i] = trade;
+            // ..setting fields with setters..
+    </code></pre>
+    <span>JavaMemoryTrade is normal POJO class with a field for each attribute + getters/setters</span>
+</section>
+<section>
+    <p>Scenario: Simple Exchange - Traditional Java</p>
+    <pre><code data-trim data-noescape class="java">
+    // Nothing to be done here on traditional approach
+    private static void destroy() {}
+    </code></pre>
+</section>
+
+<section>
+    <p>Offheap</p>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - Offheap POJO</p>
+    <pre><code data-trim data-noescape class="java">
+     private static class DirectMemoryTrade
+        private static long offset = 0;
+        private static final long tradeIdOffset = offset += 0;
+        private static final long clientIdOffset = offset += 8;
+        private static final long venueCodeOffset = offset += 8;
+        private static final long instrumentCodeOffset = offset += 4;
+        private static final long priceOffset = offset += 4;
+        private static final long quantityOffset = offset += 8;
+        private static final long sideOffset = offset += 8;
+        private static final long objectSize = offset += 2; // padding
+
+        private long objectOffset; 
+        // effectivelly, &objectOffset
+    </code></pre>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - Offheap POJO sample getter/setter</p>
+    <pre><code data-trim data-noescape class="java">
+     private static class DirectMemoryTrade
+        private static long offset = 0;
+        private static final long tradeIdOffset = offset += 0;
+        ..
+        private long objectOffset;
+
+        public long getTradeId()
+            return unsafe.getLong(objectOffset + tradeIdOffset);
+            // *(objectOffself+tradeIdOffset)
+
+        public void setTradeId(final long tradeId)
+            unsafe.putLong(objectOffset + tradeIdOffset, tradeId);
+            // *(objectOffself+tradeIdOffset) = tradeId
+    </code></pre>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - Offheap</p>
+    <pre><code data-trim data-noescape class="java">
+     
+    public static void init()
+    {
+        final long requiredHeap = NUM_RECORDS * DirectMemoryTrade.getObjectSize();
+        address = unsafe.allocateMemory(requiredHeap);
+        ...
+        for (int i = 0; i < NUM_RECORDS; i++)
+            DirectMemoryTrade trade = get(i);
+            // ..setting fields with setters..
+        }
+    }
+    </code></pre>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - flyweight object</p>
+    <pre><code data-trim data-noescape class="java">
+    private static final DirectMemoryTrade flyweight = new DirectMemoryTrade(); // flyweight pattern
+    private static DirectMemoryTrade get(final int index)
+    {
+        final long offset = address + (index * DirectMemoryTrade.getObjectSize());
+        flyweight.setObjectOffset(offset);
+        return flyweight;
+    }
+    </code></pre>
+</section>
+
+<section>
+    <p>Scenario: Simple Exchange - Offheap Management</p>
+    <pre><code data-trim data-noescape class="java">
+    // releases the chunk of memory from off-heap we allocated
+    //   manually so the JVM can release it to the OS
+    private static void destroy()
+        unsafe.freeMemory(address);
+    </code></pre>
+</section>
+
+
+<section>
+    <p>Scenario: Simple Exchange - Offheap</p>
+    <pre><code data-trim data-noescape class="java">
+     
+    public static void init()
+    {
+        final long requiredHeap = NUM_RECORDS * DirectMemoryTrade.getObjectSize();
+        address = unsafe.allocateMemory(requiredHeap);
+        ...
+        for (int i = 0; i < NUM_RECORDS; i++)
+            DirectMemoryTrade trade = get(i);
+            // ..setting fields with setters..
+        }
+    }
+    </code></pre>
+</section>
+
+
+
+
+<section>
+    <p>Results</p>
+    <pre>
+    Intel i7-860 @ 2.8GHz, 8GB RAM DDR3 1333MHz, 
+    Windows 7 64-bit, Java 1.7.0_07
+    =============================================
+    java -server -Xms4g -Xmx4g TestJavaMemoryLayout
+    Memory 4,116,054,016 total, 1,108,901,104 free
+    0 - duration 19334ms
+    Memory 4,116,054,016 total, 1,109,964,752 free
+    1 - duration 14295ms
+    Memory 4,116,054,016 total, 1,108,455,504 free
+    2 - duration 14272ms
+
+    java -server TestDirectMemoryLayout
+    Memory 128,647,168 total, 126,391,384 free
+    0 - duration 983ms
+    Memory 128,647,168 total, 126,992,160 free
+    1 - duration 958ms
+    Memory 128,647,168 total, 127,663,408 free
+    2 - duration 873ms
+    </pre>   
+
+    <p>~15s to under a second -> 1500% increase in performance</p>
+</section>
+
+
+
+
+
+
+
+
+
+<!-- 
+
+
+
+
+
+
+
+
+
+
+
+<section>
+    <p>Which one is faster?</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        return a+" "+b+" "+c+" "+d;
+    }
+    </code></pre>   
+    <p>OR</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        final StringBuffer buf = new StringBuffer();
+        buf.append(a);
+        buf.append(" ");
+        buf.append(b);
+        buf.append(" ");
+        buf.append(c);
+        buf.append(" ");
+        buf.append(d);
+        return buf.toString();
+    }
+    </code></pre>   
+</section>
+<section>
+    <p>Which one is faster?</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        return a+" "+b+" "+c+" "+d;
+    }
+    </code></pre>   
+    <p>OR</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        final StringBuffer buf = new StringBuffer();
+        buf.append(a);
+        buf.append(" ");
+        buf.append(b);
+        buf.append(" ");
+        buf.append(c);
+        buf.append(" ");
+        buf.append(d);
+        return buf.toString();
+    }
+    </code></pre>  
+    <p>They are the same! (JDK >= 6/7)
+</section>
+
+
+<section>
+<ul>
+    <li>Great type inference</li>
+    <li>Two types of references - mutable and immutable</li>
+	<li>All objects, no primitives.</li>
+	<li>Optional statement terminating commas</li>
+	<li>No keyword - "companion objects" instead</li>
+	<li>String interpolation - like Groovy</li>
+</ul>
+</section>
+<section>
+	<h3>The basic syntax</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val a = 4 // immutable
+    var b = 9 // mutable
+
+    fun foo(args: T): V {
+    	val str = "$a+$b=${a+b}"
+    }
+    </code></pre>	
+
+<ul>
+    <li>Great type inference</li>
+    <li>Two types of references - mutable and immutable</li>
+	<li>All objects, no primitives.</li>
+	<li>Optional statement terminating commas</li>
+	<li>No keyword - "companion objects" instead</li>
+	<li>String interpolation - like Groovy</li>
+</ul>
+</section>
+<section>
+	<h3>AST "Less statements, more expressions"</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val res = if(a>b) {
+    	a
+    } else {
+    	b
+    }
+    </code></pre>	
+
+<ul>
+    <li>if-else bodies now return expressions</li>
+    <li>Optional value return on blocks</li>
+</ul>
+</section>
+
+<section>
+	<h3>Poor man's pattern matching</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    when (a) {
+	    1 -> print("a == 1")
+	    2 -> print("a == 2")
+	    else -> { // Note the block
+	        print("a is neither 1 nor 2")
+	    }
+	}
+    </code></pre>	
+
+<ul>
+    <li>Similar to OCaml/Elixir/Erlang/Scala</li>
+    <li>Can be used to match sealed types</li>
+</ul>
+</section>
+
+
+<section>
+	<h3>Not so poor man's pattern matching</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    when (x) {
+	    in 1..10 -> print("x is in the range")
+	    in validNumbers -> print("x is valid")
+	    !in 10..20 -> print("x is outside the range")
+	    else -> print("none of the above")
+	}
+    </code></pre>	
+</section>
+
+<section>
+	<h3>this-is-fine pattern matching + sealed classes</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    sealed class Expr {
+	    class Const(val number: Double) : Expr()
+	    class Sum(val e1: Expr, val e2: Expr) : Expr()
+	    object NotANumber : Expr()
+	}
+
+	fun eval(expr: Expr): Double = when(expr) {
+	    is Const -> expr.number
+	    is Sum -> eval(expr.e1) + eval(expr.e2)
+	    NotANumber -> Double.NaN
+	    // the `else` clause is not required because we've 
+	    //	covered all the cases
+	}
+    </code></pre>	
+</section>
+
+<section>
+	<h3>POJO style / model-builder <small style="font-size: 30%;color: #121212">sorry Pete!</small></h3>
+	
+
+    <pre>model-builder<code style="font-size: 70%; line-height: 100%" data-trim data-noescape class="kotlin">
+    MarketSegmentUser.model
+
+    {
+	   "type": "simple",
+	   "members": [
+	       {
+	           "name": "marketSegmentId",
+	           "type": "UUID"
+	       },
+	       {
+	           "name": "users",
+	           "type": "Set<String>",
+	           "defaultValue": "Collections.emptySet()"
+	       }
+	   ]
+	}
+    </code></pre>
+
+    <pre>kotlin<code style="font-size: 70%; line-height: 100%" data-trim data-noescape class="kotlin">
+    data class MarketSegmentUser(
+    	var marketSegmentId: UUID, // mutable
+    	val users: Set<String> = Collections.emptySet() //immutable with default value
+    )
+    </code></pre>
+
+</section>
+
+
+
+<section>
+	<h3>POJO style / model-builder</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    data class MarketSegmentUser(
+    	var marketSegmentId: UUID, // mutable
+    	val users: Set<String> = Collections.emptySet() //immutable
+    )
+    </code></pre>
+
+    <pre><code  data-trim data-noescape class="kotlin">
+
+    val m = MarketSegmentUser("china-mkt", setOf("john","doe"))
+
+    // equivalents
+    m.marketSegmentId = UUID.random()
+    m.setMarketSegmentId(UUID.random())
+
+    // equivalents
+    val users = m.users
+    val users = m.getUsers()
+
+    (mkt, users) = m // destructing args/pattern-matching
+    </code></pre>
+
+</section>
+
+<section>
+	<h3>Null types</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val str: String = null // FAILS COMPILATION
+    val str: String? = null // null accepted
+    </code></pre>	
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val str2: String? = "a string"
+    print(str2.contains("a")) // FAILS COMPILATION - str2 can be null
+    </code></pre>	
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val str3: String? = "another string"
+    print(str3?.contains("a")) // ok
+    </code></pre>	
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val str4: String? = "a string"
+    print(str4!!.contains("a")) 
+    // !! ok, but programmer bears blame for NPEs 
+    // 	(used mostly to integrate with Java APIs)
+    </code></pre>	
+</section>
+
+<section>
+	<h3>Higher-order functions</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+    val doubled = ints.map { i -> i * 2 }
+
+    // if only one param, it can be omitted and replaced with it
+    strings.filter { it.length == 5 }.sortBy { it }.map { it.toUpperCase() }
+
+    // Elixir/Scala-style underscore pattern-matching for unused params
+    map.forEach { _, value -> println("$value!") }
+
+    // lambda-style functions
+    val sum: (Int, Int) -> Int = { x, y -> x + y }
+
+    // also annoymous functions like in Elixir/Scala - use when type inference is not enough
+    fun(x: Int, y: Int): Int = x + y
+
+    ints.filter(fun(item) = item > 0)
+    </code></pre>	
+
+</section>
+
+<section>
+	<h3>FUN - C++-style operator overloading</h3>
+
+    <pre><code data-trim data-noescape class="kotlin">
+	class Complex(val i: Int, val j: Int) {
+		operator fun plus(c: Complex) = {
+			return Complex(this.i + c.i, this.j + c.j)
+		}
+	}
+
+	val c = Complex(1, 0) + Complex(0, 1) // = Complex(1, 1)
+    </code></pre>	
+
+</section>
+
+<section>
+	<h4>BONUS SCALA FUN - emoji-oriented API🔥</h4>
+
+    <pre><code data-trim data-noescape class="scala">
+	def ∑(i: Int*) = i.sum
+	val s = ∑(1, 2, 3, 5) // = 11
+
+	def 🐉(i: String*) = i.any("dragon")
+	val hasDragon = 🐉("bird", "dragon", "fish") // = true
+    </code></pre>
+
+</section>
+
+<section>
+	<h3>FUN! Extention functions</h3>
+	<h6>Or: Death to (.*)Util classes</h6>
+
+    <pre><code data-trim data-noescape class="kotlin">
+	fun MutableList<Int>.swap(index1: Int, index2: Int) {
+		val tmp = this[index1] // 'this' corresponds to the list
+		this[index1] = this[index2]
+		this[index2] = tmp
+	}
+
+	val l = mutableListOf(1, 2, 3)
+	l.swap(0, 2) // 'this' inside 'swap()' will hold the value of 'l'
+    </code></pre>	
+</section>
+
+
+<!-- 
+
+	* sdafasdasPOJO (classes with basically only fields/getters/setters)
+
+
+
+		* Kotlin (data-classes)
+
+		data class T(f_1: V_1, .., f_n: V_n) {
+			// other custom methods
+		}
+
+			* Boilerplate all generated by compiler
+			* All f_n are considered final (like in Java) - if you want mutable fields, use var f_1: V_1 instead
+			* It is possible to assign default values to fields using an expression which returns a value which matches the type of the field
+
+				data class T(field: V = exp) {} 
+				// TODO check on order of field evaluation
+
+		* High-order functions
+			Higher-Order Functions, defined like "fun doStuff(body: Int -> T)): T". Which are much better than the groovy Closures IMO. (very similar to Scala's)
+		// TODO
+
+		* No static methods/objects - companion objects instead
+		// TODO
+
+		* Nothing subtype
+		// TODO???
+
+		* Extension functions (my absolute favourite)
+			* With great power comes great responsability... -->
+	<!-- </section> -->
