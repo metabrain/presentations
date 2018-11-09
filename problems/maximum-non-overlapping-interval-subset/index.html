@@ -71,30 +71,49 @@
 				</section>
 
 				<section>
-					<h2>Modeling v1 - The naïve approach</h2>
+					<h3>Modeling v1 - The naïve approach</h3>
 
 					<section>
 						<ul>
 							<li>Generate all possible subsets</li>
 							<li>Filter out the ones that have overlaps</li>
-							<li>Calculate the sum of them all</li>
+							<li>Calculate the weight sum for each subset</li>
 							<li>Pick the best one</li>
 						</ul>
 					</section>
 
 					<section>
-						<p>..But how large is the search space?</p>
-						Example: Set $S = [I_0, ..., I_{10}]$
+						<p>How large is the search space?</p>
+						<hr>
 
-						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1} = \sum_{0 \leq k \leq n} {}^{10}\!C_{k} =  2^{10} = 1024$$</p>
+						Example: Given the set $S = [I_1, ..., I_{10}]$
 
-						<table style="font-size: 50%;">
+						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1}$$</p>
+						<p>$$ = \sum_{0 \leq k \leq n} {}^{10}\!C_{k} =  2^{10}$$</p>
+
+						<p>..but how does it scale as $n$ grows..?</p>
+
+						<footer>
+							<p style="font-size: 35%;">Interesting: https://en.wikipedia.org/wiki/Binomial_coefficient#Sum_of_coefficients_row</p>
+						</footer>
+					</section>
+
+					<section>
+						<p>How large is the search space?</p>
+
+						<!-- <table style="font-size: 50%;"> -->
+						<table style="font-size: 75%;">
 					    	<thead><tr>
-					            <th>N</th>
-					            <th>Combinations</th>
-					            <th>Computable useful time</th>
+					            <th>$n$</th>
+					            <th>Combinations ($2^n$)</th>
+					            <th>Computable useful time?</th>
 					        </tr></thead>
 					        <tbody>
+					        <tr>
+					            <td>10</td>
+					            <td>1024</td>
+					            <td>Y</td>
+					        </tr>
 					        <tr>
 					            <td>15</td>
 					            <td>32768</td>
@@ -103,12 +122,12 @@
 					        <tr>
 					            <td>17</td>
 					            <td>131072</td>
-					            <td>Yes... Kind off</td>
+					            <td>Y... Kind off</td>
 					        </tr>
 					        <tr>
 					            <td>19</td>
 					            <td>524288</td>
-					            <td>Nope... Minutes</td>
+					            <td>Nope... Many minutes</td>
 					        </tr>
 					        <tr>
 					            <td>25</td>
@@ -118,11 +137,120 @@
 					        </tbody>
 					    </table>
 
+					    <p>Bruteforcing is rarely the solution, as seen here.</p>
+				    </section>
+
+				</section>
+
+
+				<section>
+					<h3>Modeling v2 - Decomposing</h3>
+
+					<section style="font-size: 50%;">
+						<p>Given $ S_n = \{I_1, ..., I_n\}\\$</p>
+
+						<p class="fragment">
+						$$f(S_n) = 
+							\begin{cases} 
+							\emptyset, & |S| = \emptyset \\
+							I_1, & |S| = 1 \\
+							S , & |S| > 1 \land (\forall_{A,B} \in S \land A \neq B : \neg intersects(A,B) \\
+							max
+							\left(\begin{aligned}
+							f(S \setminus \{A\}),\\
+							f(S \setminus \{B\}),\\
+							f(S \setminus \{A,B\})
+							\end{aligned}\right)
+	                , & |S| > 1 \land (\exists_{A,B} \in S \land A \neq B : intersects(A,B)   \\
+							\end{cases} 
+						$$
+						</p>
+
+
+						<hr>
+
+						<p>
+						<ul class="fragment">
+							<li>No intervals $\Rightarrow$ empty solution</li>
+							<li>One interval $\Rightarrow$ itself</li>
+							<li>Multiple without overlaps $\Rightarrow$ the set itself</li>
+							<li>Multiple with overlaps $\Rightarrow$ 
+							<ol>
+								<li>For each overlapping interval $A,B$, generate subset without $I$</li>
+								<li>Evaluate all these subsets recursively</li>
+								<li>Pick the best of all of these.</li>
+							</ol>
+							</li>
+						</ul>
+						</p>
+					</section>
+
+					<section>
+						<p>Issues with this recursion:</p>
+						
+						<ul>
+						<li>There are a lot of combinations that are potentially repeated (so are explored twice)</li>
+						<li>Testing for any $A,B \in S$ that might intersect each other is $N^2$</li>
+						</ul>
+
+						Example: Given the set $S = [I_0, ..., I_{10}]$
+
+						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1}$$</p>
+						<p>$$ = \sum_{0 \leq k \leq n} {}^{10}\!C_{k} =  2^{10}$$</p>
+
 						<footer>
 							<p style="font-size: 35%;">Interesting: https://en.wikipedia.org/wiki/Binomial_coefficient#Sum_of_coefficients_row</p>
 						</footer>
 					</section>
+
+					<section>
+						<p>How large is the search space?</p>
+
+						<!-- <table style="font-size: 50%;"> -->
+						<table>
+					    	<thead><tr>
+					            <th>N</th>
+					            <th>Combinations</th>
+					            <th>Computable useful time?</th>
+					        </tr></thead>
+					        <tbody>
+					        <tr>
+					            <td>10</td>
+					            <td>1024</td>
+					            <td>Y</td>
+					        </tr>
+					        <tr>
+					            <td>15</td>
+					            <td>32768</td>
+					            <td>Y</td>
+					        </tr>
+					        <tr>
+					            <td>17</td>
+					            <td>131072</td>
+					            <td>Y... Kind off</td>
+					        </tr>
+					        <tr>
+					            <td>19</td>
+					            <td>524288</td>
+					            <td>Nope... Many minutes</td>
+					        </tr>
+					        <tr>
+					            <td>25</td>
+					            <td>33554432</td>
+					            <td>Good luck capt'n (+ no memory)</td>
+					        </tr>
+					        </tbody>
+					    </table>
+				    </section>
+
 				</section>
+
+
+
+
+
+
+
 			</div>
 		</div>
 
