@@ -201,42 +201,56 @@
 				</section>
 
 				<section>
-					<h3>Optimization time!</h3>
 
 					<section>
-						<h5>Repeated state exploration</h5>
+						<h5>Optimization - repeated state exploration</h5>
 
-<!--
-https://lautgesetz.com/latreex/
+						<!-- 
+						https://lautgesetz.com/latreex/
 
-{A,B,C,D}
--{A,B,C}
---\textbf{{A,B}}
---{A,C}
---{B,C}
--{A,B,D}
---\textbf{{A,B}}
---{A,D}
---{B,D}
--{A,C,D}
---{A,C}
---{A,D}
---{C,D}
--{B,C,D}
---{B,C}
---{B,D}
---{C,D}
--->
-						$$ 
+						f{A,B,C,D}
+						-f{A,B,C}
+						--\textbf{f{A,B}}
+						--f{A,C}
+						--f{B,C}
+						-f{A,B,D}
+						--\textbf{f{A,B}}
+						--f{A,D}
+						--f{B,D}
+						-f{A,C,D}
+						--f{A,C}
+						--f{A,D}
+						--f{C,D}
+						-f{B,C,D}
+						--f{B,C}
+						--f{B,D}
+						--f{C,D}
+						-->
+						<img src="repeated-states.png"/>
 
-X \ar@/_1pc/[rrd]^{_{f;g}} \ar[r]^{_f} &List[Y] \ar[r]^{_{List[g]}} &List[List[Z]] \ar[d]_{_{flatten}}\\ &&List[Z]
+						<p>This is a tiny example! But almost half of the states are duplicated. /r/theydidthemath</p>
 
-						$$
+						<div class="fragment">
+							<p><strong>Solution:</strong> Store the sub-solutions for each sub-problem and only compute it not previously computed.</p>
+
+							<p>This category of optimisations is known as <strong>memoization</strong> (i.e.: "caching")</p>
+						</div>
+
+						<footer>
+							<p style="font-size: 35%;">https://en.wikipedia.org/wiki/Memoization</p>
+						</footer>
 					</section>
 
-					<p>Solution: Store the sub-solutions for each sub-problem and only compute it not previously computed.</p>
+					<section style="font-size: 80%;">
+						<p>Which was straight-forward with Google Commons</p>
+					    <pre><code data-trim data-noescape class="kotlin">
+					        val cache: Cache< Set < Interval >, Set < Interval > > = CacheBuilder
+					                .newBuilder()
+					                .recordStats()
+					                .build()
+						</code></pre>   
+					</section>
 
-					<p>This category of optimisations is known as memoisation (i.e.: "caching")</p>
 
 			    </section>
 
