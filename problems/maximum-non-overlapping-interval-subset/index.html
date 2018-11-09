@@ -249,10 +249,60 @@
 					                .recordStats()
 					                .build()
 						</code></pre>   
+
+						<p>Roughly 25% performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
 					</section>
 
 
 			    </section>
+
+
+				<section>
+
+					<section>
+						<h1>Optimization time</h1>
+						<p>"intersection between $n$ elements is quadratic" (plus bonus cut)</h1>
+					</section>
+					<section>
+
+						<p>Even though the numbers for intervals are quite low, $30^2$ is still 900. As such, the complexity from this step can add up for each nested sub-problem attempted.</p>
+
+						<p>Plus, everytime we remove an overlapping interval and test a subset, we are re-testing intersections again which shouldn't be needed</p>
+
+						<p>Also, caching results from $intersects(A, B)$ is pointless since it's faster to recalculate than to check cache</p>
+
+						<footer>
+							<p style="font-size: 35%;">Actually it's not really quadratic if you use an interval-tree https://en.wikipedia.org/wiki/Interval_tree </p>
+						</footer>
+					</section>
+
+					<section style="font-size: 80%;">
+						<p>There is a way of calculating this faster, with some interesting side-effects we can use, if we model this problem as a <strong>graph problem</strong>.</p>
+
+						<p>Let $G$ be a graph with nodes $I_n$ , in which node $I_i$ is connected to node $I_j$  $\iff$ they intersect each other.</p>
+
+						<p>PUT EXAMPLE GRAPH HERE</p>
+
+						<p>Any interesting properties you can identify?</p>
+					</section>
+
+					<section style="font-size: 80%;">
+						<p>Nodes that are isolated do not intersect any node, hence, are automatically part of the solution. No need to carry them for the sub-set attempts.</p>
+
+						<p>But more importantly, we can identify a couple of "tribes" of intervals that intersect eachother. In graph lingo, these are called <strong>connected components.</strong></p>
+
+						<p>PUT EXAMPLE GRAPH HERE</p>
+
+						<p>Any interesting properties you can identify?</p>
+						
+
+						<p>Roughly 75% performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
+					</section>
+
+
+			    </section>
+
+
 
 
 
