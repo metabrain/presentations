@@ -83,7 +83,44 @@
 					</section>
 
 					<section>
-						Example: Set $S = [I_0, .., I_{10}]$
+						<p>..But how large is the search space?</p>
+						Example: Set $S = [I_0, ..., I_{10}]$
+
+						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1} = \sum{10}{1}  {}^{10}\!C_{10} =  2^{10} = 1024$$</p>
+
+						<table>
+					    	<thead><tr>
+					            <th>N</th>
+					            <th>Combinations</th>
+					            <th>Computable useful time</th>
+					        </tr></thead>
+					        <tbody>
+					        <tr>
+					            <td>15</td>
+					            <td>32768</td>
+					            <td>Y</td>
+					        </tr>
+					        <tr>
+					            <td>17</td>
+					            <td>131072</td>
+					            <td>Yes... Kind off</td>
+					        </tr>
+					        <tr>
+					            <td>19</td>
+					            <td>524288</td>
+					            <td>Nope... Minutes</td>
+					        </tr>
+					        <tr>
+					            <td>25</td>
+					            <td>524288</td>
+					            <td>Nope... Minutes</td>
+					        </tr>
+					        </tbody>
+					    </table>
+
+						<footer>
+							<p style="font-size: 35%;">Interesting: https://en.wikipedia.org/wiki/Binomial_coefficient#Sum_of_coefficients_row</p>
+						</footer>
 					</section>
 				</section>
 			</div>
