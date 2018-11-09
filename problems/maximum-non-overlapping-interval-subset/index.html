@@ -24,15 +24,68 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section data-external="pages/cover.html"> </section>
-				<section data-external="pages/languages.html"> </section>
+				<!-- <section data-external="pages/cover.html"> </section> -->
+				<!-- <section data-external="pages/languages.html"> </section>
 				<section data-external="pages/pojo.html"> </section>
 				<section data-external="pages/java.html"> </section>
-				<section data-external="pages/gotta_go_fast.html"> </section>
+				<section data-external="pages/gotta_go_fast.html"> </section> -->
 				<!-- <section data-external="pages/null.html"> </section> -->
 				<!-- <section data-external="pages/sugar.html"> </section> -->
 				<!-- <section data-external="pages/example.html"> </section> -->
 				<!-- <section data-external="pages/conclusion.html"> </section> -->
+				<section>
+					<h2>Will it <strike>blend</strike> compute?</h2>
+					<h5>Finding the optimal permutation of overlapping segments for maximum non-overlapping yield</h5>
+				</section>
+
+				<section>
+					<section>
+						<h3>The (real) problem</h3>
+						<p>Given a set of scenes, each with it's own "score", find the subset of non-overlapping scenes these that maximizes sum of the "score"</p>
+						<p style="font-size: 50%;">(psst.. "score" is our favourite word here)</p>
+						<p style="font-size: 50%;">also, when the sum is the same (tie), we should pick the one that starts the earliest</p>
+
+
+						<hr>
+						A scene:
+						<ul>
+							<li>Defined by a start and end frame (inclusive)</li>
+							<li>A special "score" whoose calculation is outside of this scope.</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>The (generic) problem</h3>
+						<p>Given a set of weighted-intervals, find the <strong>optimal subset without overlapping intervals which maximizes the sum </strong> of their weights</p>
+
+						<p style="font-size: 50%;">Again, in case of ties, pick the subset with earliest start</p>
+
+
+						<hr>
+						Weighted-interval:
+						<p>$$[start, end] \Rightarrow weight$$</p>
+
+						<hr>
+						Set of weighted-intervals:
+						<p> $$([1,2]\Rightarrow 1,[4,10]\Rightarrow 6) $$</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Modeling v1</h2>
+						<h4>The naïve approach</h4>
+					</section>
+
+					<section>
+						<h4>The naïve approach</h4>
+
+						<ul>
+							<li>Generate all possible subsets</li>
+							<li>Calculate the sum of </li>
+						</ul>
+					</section>
+				</section>
 			</div>
 		</div>
 
