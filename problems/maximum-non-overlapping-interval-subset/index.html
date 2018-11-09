@@ -60,30 +60,30 @@
 
 						<p style="font-size: 50%;">Again, in case of ties, pick the subset with earliest start</p>
 
-
 						<hr>
 						Weighted-interval:
 						<p>$$[start, end] \Rightarrow weight$$</p>
 
 						<hr>
 						Set of weighted-intervals:
-						<p> $$([1,2]\Rightarrow 1,[4,10]\Rightarrow 6) $$</p>
+						<p> $$ \{ [1,2]\Rightarrow 1,[4,10]\Rightarrow 6\} $$</p>
 					</section>
 				</section>
 
 				<section>
+					<h2>Modeling v1 - The naïve approach</h2>
+
 					<section>
-						<h2>Modeling v1</h2>
-						<h4>The naïve approach</h4>
+						<ul>
+							<li>Generate all possible subsets</li>
+							<li>Filter out the ones that have overlaps</li>
+							<li>Calculate the sum of them all</li>
+							<li>Pick the best one</li>
+						</ul>
 					</section>
 
 					<section>
-						<h4>The naïve approach</h4>
-
-						<ul>
-							<li>Generate all possible subsets</li>
-							<li>Calculate the sum of </li>
-						</ul>
+						Example: Set $S = [I_0, .., I_{10}]$
 					</section>
 				</section>
 			</div>
@@ -102,8 +102,8 @@
 					config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
 				},
 
-    // Transition speed
-    transitionSpeed: 'default', // default/fast/slow
+			    // Transition speed
+			    transitionSpeed: 'default', // default/fast/slow
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
 
