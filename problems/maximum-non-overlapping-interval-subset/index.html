@@ -86,9 +86,9 @@
 						<p>..But how large is the search space?</p>
 						Example: Set $S = [I_0, ..., I_{10}]$
 
-						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1} = \sum{10}{1}  {}^{10}\!C_{10} =  2^{10} = 1024$$</p>
+						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1} = \sum_{0 \leq k \leq n} {}^{10}\!C_{k} =  2^{10} = 1024$$</p>
 
-						<table>
+						<table style="font-size: 50%;">
 					    	<thead><tr>
 					            <th>N</th>
 					            <th>Combinations</th>
@@ -112,8 +112,8 @@
 					        </tr>
 					        <tr>
 					            <td>25</td>
-					            <td>524288</td>
-					            <td>Nope... Minutes</td>
+					            <td>33554432</td>
+					            <td>Good luck capt'n (+ no memory)</td>
 					        </tr>
 					        </tbody>
 					    </table>
