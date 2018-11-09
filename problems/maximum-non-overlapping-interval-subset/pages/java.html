@@ -1,0 +1,144 @@
+<section>
+	<h3>What is faster?! <strike>Alex</strike> Java edition</h3>
+</section>
+
+<section>
+    <p>Can we make this faster?</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private boolean isPair(int i) {
+        return i%2==0;
+    }
+    </code></pre>   
+</section>
+<section>
+    <p>YES WE CAN</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private boolean isPair(int i) {
+        return i&1==0;
+    }
+    </code></pre>   
+</section>
+
+
+
+<section>
+    <p>Which one is faster?</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        return a+" "+b+" "+c+" "+d;
+    }
+    </code></pre>   
+    <p>OR</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        final StringBuffer buf = new StringBuffer();
+        buf.append(a);
+        buf.append(" ");
+        buf.append(b);
+        buf.append(" ");
+        buf.append(c);
+        buf.append(" ");
+        buf.append(d);
+        return buf.toString();
+    }
+    </code></pre>   
+</section>
+<section>
+    <p>Which one is faster?</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        return a+" "+b+" "+c+" "+d;
+    }
+    </code></pre>   
+    <p>OR</p>
+    <pre><code data-trim data-noescape class="kotlin">
+    private String concat(String a, String b, String c, String d) {
+        final StringBuffer buf = new StringBuffer();
+        buf.append(a);
+        buf.append(" ");
+        buf.append(b);
+        buf.append(" ");
+        buf.append(c);
+        buf.append(" ");
+        buf.append(d);
+        return buf.toString();
+    }
+    </code></pre>  
+    <p>They are the same! (JDK >= 6/7)
+</section>
+
+
+<section>
+    <p>Can we make this faster?</p>
+    <h3 style="font-size:16px;">example from Martin Thompson: https://mechanical-sympathy.blogspot.co.uk/2012/10/compact-off-heap-structurestuples-in.html</h3>
+
+    <pre><code data-trim data-noescape class="java">
+    static VolatileLong[] longs = new VolatileLong[NUM_THREADS];
+
+    // multiple  threads doing the same:
+    for (int i = 0; i < longs.length; i++)
+        longs[i] = new VolatileLong();
+    </code></pre>
+
+    <pre><code data-trim data-noescape class="java">
+    public final static class VolatileLong
+    {
+        public volatile long value = 0L;
+    }
+    </code></pre>
+</section>
+
+
+
+<section>
+    <p>Can we make this faster?</p>
+    <h3 style="font-size:16px;">example from Martin Thompson: https://mechanical-sympathy.blogspot.co.uk/2012/10/compact-off-heap-structurestuples-in.html</h3>
+
+    <pre><code data-trim data-noescape class="java">
+    static VolatileLong[] longs = new VolatileLong[NUM_THREADS];
+
+    // multiple  threads doing the same:
+     public void run()
+        long i = ITERATIONS + 1;
+        while (0 != --i)
+            longs[arrayIndex].value = i;
+    </code></pre>
+
+    <pre><code data-trim data-noescape class="java">
+    public final static class VolatileLong
+    {
+        public volatile long value = 0L;
+        public long p1, p2, p3, p4, p5, p6; // cache-line padding
+    }
+    </code></pre>
+    <p>YES! By padding cache lines to avoid false-sharing.</p>
+</section>
+
+<section>
+    <p>How much faster is it though?</p>
+</section>
+
+
+<section>
+    <p>How much faster is it though?</p>
+    <h3 style="font-size:16px;">example from Martin Thompson: https://mechanical-sympathy.blogspot.co.uk/2012/10/compact-off-heap-structurestuples-in.html</h3>
+    
+    <img src="https://2.bp.blogspot.com/-gi_3N6LC26E/TjOzSGIUMxI/AAAAAAAAAAo/5-UaNKmGZzY/s1600/duration.png" style="background:none; border:none; box-shadow:none;">
+    <p>PS: It can happen in any language.</p>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

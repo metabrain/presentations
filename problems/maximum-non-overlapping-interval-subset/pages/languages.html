@@ -1,0 +1,46 @@
+
+	<section>
+		<h1>Is Java that much slower than C99/C++?</h1>
+	</section>
+	<section>
+		<p>Yes and no.</p>
+		<ul>
+			<li>Long running CPU-bound tasks: not really/not by a lot (surprise..!)</li>
+			<li>JIT is slower but can allow for platform specific optimizations during runtime</li>
+		</ul>
+	</section>
+	<section>
+		<p>Overall</p>
+		<ul>
+			<li>I/O/arithmetic ops/exception -> same ballpark</li>
+			<li>Strings are slower -> immutable UTF-16 encoded objects</li>
+			<li>Trigonometric funs -> due to tight spec might != opcodes</li>
+			<li>Java uses a lot of memory -> object model overhead</li>
+			<li>Harder to implement lower level data-structures in Java - <strong>Make sun.misc.Unsafe Great Again!</strong></li>
+			<li>GC requires expertise in tightly-bounded applications (finance, HFT, real-time systems)</li>
+			<li>JVM actually has lower overhead for allocation of memory than malloc/free (it doesn't really allocate to be fair..)</li>
+		</ul>
+	</section>
+	<section>
+		<p>Notable software</p>
+		<ul>
+			<li>Apache Hadoop</li>
+			<li>ActiveMq</li>
+			<li>JetBrains Intelij/Eclipse</li>
+			<li>JRuby</li>
+			<li>JPython</li>
+			<li>..Minecraft..</li>
+			<li>Android (debatable Oracle!)</li>
+			<li>
+				<p>HP/LL specific:</p>
+				<ul>
+					<li>LMAX (actually powering the NYSE FX trading)</li>
+					<li>Disruptor</li>
+					<li>OpenHFT libs - Chronicle Queue/Map/Values</li>
+					<li>Zero-Allocation-Hashing</li>
+				</ul>
+			</li>
+		</ul>
+	</section>
+
+	</section>

@@ -1,0 +1,84 @@
+<section>
+* Kotlin syntatic sugar 
+
+	* Shortened constructors - new keyword is gone
+
+	T()
+
+	* Getting rid of the final keyword
+
+	val x: T = T() // imutable reference
+	var y: T = T() // mutable reference
+	y = x // valid
+	x = y // fails type-checking
+
+	* Optional type declarations when they can be infered by compiler
+
+	val t: T = T()
+	// or
+	val t = T() // compile knows it has to be a T
+
+	* Shorthanded getters/setters + constructors
+
+	data class T(f: V) {}
+
+	..
+	T().f // uses T().getF()
+	T().f = V()
+
+	* Poor man's pattern maching 'a la' OCaml
+
+	data class Person(name: String, age: Int) {}
+
+	val p: Person = Person("Dan",18)
+	val (name, age) = p
+	// name and age available on scope
+
+	* Named parameters
+	// TODO
+
+	* String interpolation - YESSSS
+
+	println("Result is '${obj.result}' and took ${(end-start)/1000} seconds")
+
+	* A very nice of Kotlin.collections that is backwards-compatible with java.collections
+
+	val variableName = "value"
+	kotlin.collections.mapOf(
+		"username" to username,
+		"username" to password,
+		variableName to "constant"
+	)
+
+	// Gives
+	// {
+	// 	"username": 
+	// }
+
+	* When keyword (pattern matching)
+
+	before:
+	fun {
+	    val uri = lookup("SOURCE_FILE_URI")
+	    if(uri!=null)
+	        return uri
+
+	    val file = lookup("sourceFile")
+	    if (file != null) {
+	        return (file as SourceFile).uri
+	    }
+
+	    return null
+	}
+
+	after:	
+	internal fun HistoricProcessInstance.lookupSourceFile(): Any? {
+	    return when {
+	        lookup("SOURCE_FILE_URI")!=null -> lookup("SOURCE_FILE_URI")
+	        lookup("sourceFile")!=null -> (lookup("sourceFile") as SourceFile).uri
+	        else -> null
+	    }
+	}
+
+
+</section>

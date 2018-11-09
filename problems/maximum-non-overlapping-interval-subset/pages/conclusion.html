@@ -1,0 +1,146 @@
+
+<section>
+<h1>Examples of AdCloud usage</h1>
+</section>
+<section>
+    <pre><code style="max-height:1000px !important; font-size: 60%; line-height: 100%"  data-trim data-noescape class="kotlin">
+
+/**
+ * Remotely deploy from git workflows to the Camunda engine.
+ * 
+ * @author daniel.parreira
+ */
+class CamundaDeploy() : Handler {
+
+    override fun handle(context: Context) {
+        when(context.request.method) {
+            HttpMethod.GET ->
+                context.render(json(listBranches()))
+
+            HttpMethod.POST -> {
+                context.parse(jsonNode()).then { json ->
+                    val ref = json.findValue("ref")?.asText()
+                    val directoryName = json.findValue("dir")?.asText()
+                    val depName = json.findValue("name")?.asText()
+
+                    LOG.info("Deploy params: [$json]")
+
+                    val reply =
+                            if (ref == null) {
+                                mapOf(
+                                        "success" to false,
+                                        "reason" to "Required parameter 'ref' is missing."
+                                )
+                            } else if (directoryName == null) {
+                                mapOf(
+                                        "success" to false,
+                                        "reason" to "Required parameter 'dir' is missing."
+                                )
+                            } else {
+                                deployRepo(ref, directoryName, depName)
+                            }
+
+                    context.render(json(reply))
+                }
+            }
+            else -> context.next()
+        }
+    }
+}
+
+    </code></pre>	
+</section>
+<section>
+    <pre><code style="max-height:1000px !important; font-size: 60%; line-height: 100%"  data-trim data-noescape class="kotlin">
+
+    inline fun <T> timeThat(id: String, handle: () -> T): T {
+        val start = System.currentTimeMillis()
+        val ret: T = handle()
+        val end = System.currentTimeMillis()
+        println("$id -> Request took ${end-start}ms")
+        return ret
+    }
+
+    // ..somewhere else..
+    
+    @JvmStatic fun getRuntimeInstances() = Main.timeThat("runtimeService") {
+        (WorkflowEngineHelper.instance.processEngine
+                .runtimeService
+                .createProcessInstanceQuery()
+                .orderByProcessInstanceId()
+                .desc()
+                .list() ?: listOf())
+    }
+
+
+    </code></pre>	
+</section>
+<section>
+    <pre><code style="max-height:1000px !important; font-size: 70%; line-height: 100%"  data-trim data-noescape class="kotlin">
+
+    // lexicographically sorted
+	val map: MutableMap<String, Any> = Maps.newTreeMap { a, b -> b.compareTo(a) }
+
+	instances.forEach { instance ->
+	    map[instance.id.toString()] = mapOf(
+            "process_definition_name" to (instance.lookupProcessDefinitionName() ?: "-"),
+
+            "output_reconform_video" to (instance.lookup("OutputReconformVideo")?.toString() ?: "-"),
+            "episode_uuid" to (instance.lookup("EpisodeUUID")?.toString() ?: "-"),
+            "scene_uuids" to (instance.lookup("SceneUUIDs")?.toString() ?: "-"),
+
+            "content_owner" to (instance.lookup("contentOwner")?.toString() ?: "-"),
+
+            "status" to "running",
+            "start_time" to toLexicographicOrderDate(instance.lookupStartTime()),
+            "end_time" to "-" /*still running*/,
+
+            "process_instance_id" to (instance.lookup("contentOwnerName")?.toString() ?: "-"),
+            "is_suspended" to instance.isSuspended
+	    )
+	}
+
+	return map.values
+
+    </code></pre>	
+</section>
+<section>
+    <pre><code style="max-height:1000px !important; max-width:1000px !important; font-size: 70%; line-height: 100%"  data-trim data-noescape class="kotlin">
+
+	// lexicographically sorted
+	val map: MutableMap<String, Any> = Maps.newTreeMap { a, b -> b.compareTo(a) }
+
+	instances.forEach {
+	    map[it.id.toString()] = mapOf(
+	        "process_definition_name" to (it.lookupProcessDefinitionName() ?: "-"),
+
+	        "output_reconform_video" to (it.lookup("OutputReconformVideo")?.toString() ?: "-"),
+	        "episode_uuid" to (it.lookup("EpisodeUUID")?.toString() ?: "-"),
+	        "scene_uuids" to (it.lookup("SceneUUIDs")?.toString() ?: "-"),
+
+	        "content_owner" to (it.lookup("contentOwner")?.toString() ?: "-"),
+
+	        "status" to "running",
+	        "start_time" to toLexicographicOrderDate(it.lookupStartTime()),
+	        "end_time" to "-" /*still running*/,
+
+	        "process_instance_id" to (it.lookup("contentOwnerName")?.toString() ?: "-"),
+	        "is_suspended" to it.isSuspended
+	    )
+	}
+
+	return map.values
+
+    </code></pre>	
+</section>
+
+<section>
+<h1>Conclusion</h1>
+<ul>
+	<li>Not comparable to Scala/Closure since so much is so different - brand new languages that happen to use the JVM</li>
+	<li>Comparable to Groovy - IFF we use @CompileStatic</li>
+	<li>IMHO, Groovy is more targeted towards testing (no types gallore) and scripting since it can be interpreted/script friendly.</li>
+	<li>Well implemented null-safety/"optionals"</li>
+	<li>Poor man's Scala	</li>
+</ul>
+</section>

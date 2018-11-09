@@ -1,0 +1,71 @@
+
+<section>
+    <h3><strong>Beginner</strong>: Using the right data-structures</h3>
+</section>
+
+<section>
+    <img src="bigO.png" style="top:0px; width:70%; background:none; border:none; box-shadow:none;">
+</section>
+<section>
+    <img src="bigO_note.png" style="top:0px; width:70%; background:none; border:none; box-shadow:none;">
+</section>
+
+
+
+<section>
+    <h3><strong>Intermediate</strong>: Using the right data-structure <strong style="color:red">implementation</strong></h3>
+</section>
+
+
+<section>
+    <p>Common options in Java:</p>
+    <ul>
+        <li>java.collections (default)</li>
+        <li>fastutil.di.unimi.it ⭐400+ (used in Minecraft!)</li>
+        <li>gs-collections ⭐1700+</li>
+        <li>HPPC ⭐400+</li>
+        <li>Koloboke (OpenHFT) ⭐700+</li>
+        <li>Trove (older, but falling behind)</li>
+    </ul>
+</section>
+
+<section>
+    <h3>100M Object put/remove/get (lower->better)</h3>
+    <img src="http://d1k2jhzcfaebet.cloudfront.net/wp-content/uploads/2015/02/put_obj.gif" style="top:0px; width:90%; background:none; border:none; box-shadow:none;">
+</section>
+<section>
+    <h3>100M Object put/remove/get (lower->better)</h3>
+    <img src="http://d1k2jhzcfaebet.cloudfront.net/wp-content/uploads/2015/02/remove_obj.gif" style="top:0px; width:90%; background:none; border:none; box-shadow:none;">
+</section>
+<section>
+    <h3>100M Object put/remove/get (lower->better)</h3>
+    <img src="http://d1k2jhzcfaebet.cloudfront.net/wp-content/uploads/2015/02/get_obj.gif" style="top:0px; width:90%; background:none; border:none; box-shadow:none;">
+</section>
+<section>
+    <h3>Overall</h3>
+    <ul>
+        <li>JDK is bad when we foresee heavy put/remove load</li>
+        <li>(not shown) every one of them use a lot less memory per entry than JDK</li>
+        <li>JDK is better for pure-read scenarios, surprisingly</li>
+    </ul>
+</section>
+<section>
+    <h3>Conclusion</h3>
+    <ul>
+        <li>Profile</li>
+        <li>Benchmark</li>
+        <li>Compare</li>
+        <li>Iterate</li>
+    </ul>
+</section>
+
+
+
+
+
+
+
+
+
+
+
