@@ -287,14 +287,57 @@
 					</section>
 
 					<section style="font-size: 80%;">
-						<p>Nodes that are isolated do not intersect any node, hence, are automatically part of the solution. No need to carry them for the sub-set attempts.</p>
+						<p>PUT EXAMPLE GRAPH HERE WITH ISOLATED NODES IN RED and CONNECTED COMPONENTS IN GREEN</p>
+
+						<p>Nodes that are isolated do not intersect any node, hence, are automatically part of the solution. No need to carry them for the sub-set attempts. In graph lingo, these are called <strong>disconnected components</strong>.</p>
 
 						<p>But more importantly, we can identify a couple of "tribes" of intervals that intersect eachother. In graph lingo, these are called <strong>connected components.</strong></p>
 
-						<p>PUT EXAMPLE GRAPH HERE</p>
+						<p>And, we know that AT LEAST one interval from each connected component is part of the optimal solution - since worst-case scenario they all intersect eachother and we pick the one with more "score".</p>
 
-						<p>Any interesting properties you can identify?</p>
-						
+					</section>
+
+					<section style="font-size: 80%;">
+						<p>How to find all connected/disconnected components?</p>
+
+						<p>A data-structure called "union-find" allows us to do exactly this.</p>
+						<p>It is used in Tarjan's algorithm used to find strongly-connected components (we don't need this) and in Kruskal's algorithm (minimum spanning tree).</p>
+
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/UnionFindKruskalDemo.gif/250px-UnionFindKruskalDemo.gif"/>
+
+						<p>With this knowledge we can perfect our solution further</p>
+					</section>
+
+					<section style="font-size: 50%;">
+
+						<p>Given $$ 
+							\begin{aligned}
+							S_n = \{I_1, ..., I_n\}\\
+							S_{DC} = \mbox{intervals in disconnected components}\\
+							S_{CC} = \mbox{set of intervals in connected components}\\
+							\end{aligned}
+						$$</p>
+
+						<p>
+						$$f(S_n) = 
+							\begin{cases} 
+							\emptyset, & |S| = \emptyset \\
+							I_1, & |S| = 1 \\
+							S , & S \cap S_{DC} = S \\
+							S_{DC} \cup max
+							\left(\begin{aligned}
+							f(S \setminus \{A\})
+							,\\
+							f(S \setminus \{B\}))
+							\end{aligned}\right)
+	                		, & S_{CC} \neq \emptyset   \\
+							\end{cases} 
+						$$
+						</p>
+
+						<footer>
+							<p style="font-size: 35%;">https://en.wikipedia.org/wiki/Disjoint-set_data_structure</p>
+						</footer>
 
 						<p>Roughly 75% performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
 					</section>
