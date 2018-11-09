@@ -138,13 +138,14 @@
 					    </table>
 
 					    <p>Bruteforcing is rarely the solution, as seen here.</p>
+					    <p>..and don't forget that each set is not trivial to compute!!! (overlaps + sum)</p>
 				    </section>
 
 				</section>
 
 
 				<section>
-					<h3>Modeling v2 - Decomposing</h3>
+					<h3>Modeling v2 - Decomposing D&C</h3>
 
 					<section style="font-size: 50%;">
 						<p>Given $ S_n = \{I_1, ..., I_n\}\\$</p>
@@ -157,9 +158,9 @@
 							S , & |S| > 1 \land (\forall_{A,B} \in S \land A \neq B : \neg intersects(A,B) \\
 							max
 							\left(\begin{aligned}
-							f(S \setminus \{A\}),\\
-							f(S \setminus \{B\}),\\
-							f(S \setminus \{A,B\})
+							f(S \setminus \{A\})
+							,\\
+							f(S \setminus \{B\}))
 							\end{aligned}\right)
 	                , & |S| > 1 \land (\exists_{A,B} \in S \land A \neq B : intersects(A,B)   \\
 							\end{cases} 
@@ -186,64 +187,58 @@
 					</section>
 
 					<section>
-						<p>Issues with this recursion:</p>
+						<p>But there are some issues with the divide-and-conquer approach..</p>
 						
 						<ul>
-						<li>There are a lot of combinations that are potentially repeated (so are explored twice)</li>
-						<li>Testing for any $A,B \in S$ that might intersect each other is $N^2$</li>
+							<li class="fragment">There are a lot of combinations that are potentially repeated (so are explored twice)</li>
+							<li class="fragment"><span style="font-size: 50%;">(naïve)</span> Testing for any $A,B \in S$ that might intersect each other is $N^2$</li>
+							<li class="fragment">We are "carrying around" a lot of intervals that will never be required for sub-problems</li>
+							<li class="fragment">Most of the times, the optimal solution matches the "greedy" solution, so we are wasting resources exploring sub-optimal states</li>
 						</ul>
 
-						Example: Given the set $S = [I_0, ..., I_{10}]$
 
-						<p>$$ {}^{10}\!C_{10} \times {}^{10}\!C_{9} \times ... \times {}^{10}\!C_{1}$$</p>
-						<p>$$ = \sum_{0 \leq k \leq n} {}^{10}\!C_{k} =  2^{10}$$</p>
-
-						<footer>
-							<p style="font-size: 35%;">Interesting: https://en.wikipedia.org/wiki/Binomial_coefficient#Sum_of_coefficients_row</p>
-						</footer>
 					</section>
+				</section>
+
+				<section>
+					<h3>Optimization time!</h3>
 
 					<section>
-						<p>How large is the search space?</p>
+						<h5>Repeated state exploration</h5>
 
-						<!-- <table style="font-size: 50%;"> -->
-						<table>
-					    	<thead><tr>
-					            <th>N</th>
-					            <th>Combinations</th>
-					            <th>Computable useful time?</th>
-					        </tr></thead>
-					        <tbody>
-					        <tr>
-					            <td>10</td>
-					            <td>1024</td>
-					            <td>Y</td>
-					        </tr>
-					        <tr>
-					            <td>15</td>
-					            <td>32768</td>
-					            <td>Y</td>
-					        </tr>
-					        <tr>
-					            <td>17</td>
-					            <td>131072</td>
-					            <td>Y... Kind off</td>
-					        </tr>
-					        <tr>
-					            <td>19</td>
-					            <td>524288</td>
-					            <td>Nope... Many minutes</td>
-					        </tr>
-					        <tr>
-					            <td>25</td>
-					            <td>33554432</td>
-					            <td>Good luck capt'n (+ no memory)</td>
-					        </tr>
-					        </tbody>
-					    </table>
-				    </section>
+<!--
+https://lautgesetz.com/latreex/
 
-				</section>
+{A,B,C,D}
+-{A,B,C}
+--\textbf{{A,B}}
+--{A,C}
+--{B,C}
+-{A,B,D}
+--\textbf{{A,B}}
+--{A,D}
+--{B,D}
+-{A,C,D}
+--{A,C}
+--{A,D}
+--{C,D}
+-{B,C,D}
+--{B,C}
+--{B,D}
+--{C,D}
+-->
+						$$ 
+
+X \ar@/_1pc/[rrd]^{_{f;g}} \ar[r]^{_f} &List[Y] \ar[r]^{_{List[g]}} &List[List[Z]] \ar[d]_{_{flatten}}\\ &&List[Z]
+
+						$$
+					</section>
+
+					<p>Solution: Store the sub-solutions for each sub-problem and only compute it not previously computed.</p>
+
+					<p>This category of optimisations is known as memoisation (i.e.: "caching")</p>
+
+			    </section>
 
 
 
