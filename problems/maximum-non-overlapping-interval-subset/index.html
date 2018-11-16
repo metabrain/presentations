@@ -362,7 +362,7 @@
 					</section>
 					<section>
 
-						<p>When we have over 20 overlapping segments in the $S_{CC}$, there are still too many states to explore that will take too much time.</p>
+						<p>When we have over 20~30 overlapping segments in the $S_{CC}$, there are still too many states to explore that will take too much time.</p>
 
 						<p><strong>We need to model the problem differently.</strong></p>
 
@@ -370,7 +370,7 @@
 
 					</section>
 
-					<section style="font-size: 50%;">
+					<section style="font-size: 55%;">
 
 						<p>Given $$ 
 							\begin{aligned}
@@ -388,8 +388,8 @@
 							I_1, & |S| = 1 \\
 							S , & S \cap S_{DC} = S \\
 							
-							\bigcup\limits_{i \in S_{DC}} 
-							({S_{DC}}_{i})
+							\bigcup\limits_{w \in S_{DC}} 
+							({S_{DC}}_{w})
 
 							\cup
 
@@ -399,7 +399,7 @@
 							
 							&f({S_{CC}}_{j} \setminus \{I_1\})
 							,\\
-							I_1 \cup &f({S_{CC}}_{j} \setminus \{I_1\} \setminus \{I_x , x != I_1 \land intersects(I_1, x)\}  )
+							I_1 \cup &f({S_{CC}}_{j} \setminus \{I_x \in {S_{CC}}_{j}, intersects(I_1, I_x)\}  )
 							\end{aligned}\right)
 	                		, & S_{CC} \neq \emptyset   \\
 							\end{cases} 
@@ -407,6 +407,7 @@
 						</p>
 
 						<footer>
+							<p style="font-size: 60%;">Note that $I_x \in {S_{CC}}_{j}$ automatically includes $I_1$</p>
 							<p style="font-size: 35%;">Yes, maths are mega-dodgy.</p>
 						</footer>
 
