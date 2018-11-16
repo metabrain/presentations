@@ -281,19 +281,20 @@
 
 						<p>Let $G$ be a graph with nodes $I_n$ , in which node $I_i$ is connected to node $I_j$  $\iff$ they intersect each other.</p>
 
-						<p>PUT EXAMPLE GRAPH HERE</p>
-
 						<p>Any interesting properties you can identify?</p>
+						<img src="graph1.png"/>
 					</section>
 
 					<section style="font-size: 80%;">
-						<p>PUT EXAMPLE GRAPH HERE WITH ISOLATED NODES IN RED and CONNECTED COMPONENTS IN GREEN</p>
+						<img src="graph_dc.png"/>
 
-						<p>Nodes that are isolated do not intersect any node, hence, are automatically part of the solution. No need to carry them for the sub-set attempts. In graph lingo, these are called <strong>disconnected components</strong>.</p>
+						<p><strong>disconnected components</strong></p> 
+						<p>Nodes that are isolated $=>$ automatically part of the solution</p>
 
-						<p>But more importantly, we can identify a couple of "tribes" of intervals that intersect eachother. In graph lingo, these are called <strong>connected components.</strong></p>
+						<p><strong>connected components</strong></p>
+						<p>Connected nodes $=>$ at least one of them cannot be part of the solution</p>
 
-						<p>And, we know that AT LEAST one interval from each connected component is part of the optimal solution - since worst-case scenario they all intersect eachother and we pick the one with more "score".</p>
+						<p>So we have to test all permutations of one removal</p>
 
 					</section>
 
@@ -324,11 +325,17 @@
 							\emptyset, & |S| = \emptyset \\
 							I_1, & |S| = 1 \\
 							S , & S \cap S_{DC} = S \\
-							S_{DC} \cup max
+							
+							\bigcup\limits_{i \in S_{DC}} 
+							({S_{DC}}_{i})
+
+							\cup
+
+							\bigcup\limits_{j \in S_{CC}} 
+							 max
 							\left(\begin{aligned}
-							f(S \setminus \{A\})
-							,\\
-							f(S \setminus \{B\}))
+							{\displaystyle\mathop{{{{\forall}}}}_{I \in {S_{CC}}_{j}}}
+							f({S_{CC}}_{j} \setminus \{I\})
 							\end{aligned}\right)
 	                		, & S_{CC} \neq \emptyset   \\
 							\end{cases} 
@@ -346,8 +353,93 @@
 			    </section>
 
 
+				<section>
+
+					<section>
+						<h1>(last) Optimization time</h1>
+						<p>Still too many damn permutations!</h1>
+					</section>
+					<section>
+
+						<p>When we have over 20 overlapping segments in the $S_{CC}$, there are still too many states to explore that will take too much time.</p>
+
+						<p><strong>We need to model the problem differently.</strong></p>
+
+						<p>Instead of generating the possible permutations for removal, we are just going to pick the best from taking the first interval in the set or NOT.</p>
+
+					</section>
+
+					<section style="font-size: 50%;">
+
+						<p>Given $$ 
+							\begin{aligned}
+							S_n = \{I_1, ..., I_n\}\\
+							S_{DC} = \mbox{intervals in disconnected components}\\
+							S_{CC} = \mbox{set of intervals in connected components}\\
+							{S_{CC}}_{I_1} = \mbox{first interval in a set of intervals in the connected components}\\
+							\end{aligned}
+						$$</p>
+
+						<p>
+						$$f(S_n) = 
+							\begin{cases} 
+							\emptyset, & |S| = \emptyset \\
+							I_1, & |S| = 1 \\
+							S , & S \cap S_{DC} = S \\
+							
+							\bigcup\limits_{i \in S_{DC}} 
+							({S_{DC}}_{i})
+
+							\cup
+
+							\bigcup\limits_{j \in S_{CC}} 
+							 max
+							\left(\begin{aligned}
+							
+							f({S_{CC}}_{j} \setminus \{I_1\})
+							,
+							I_1 \cup f({S_{CC}}_{j} \setminus \{I_1\})
+
+							\end{aligned}\right)
+	                		, & S_{CC} \neq \emptyset   \\
+							\end{cases} 
+						$$
+						</p>
+
+						<footer>
+							<p style="font-size: 35%;">https://en.wikipedia.org/wiki/Disjoint-set_data_structure</p>
+						</footer>
+
+						<p>Roughly 75% performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
+					</section>
 
 
+			    </section>
+
+
+				<section>
+
+					<section>
+						<h1>Guest solution</h1>
+					</section>
+
+					<section style="font-size: 60%;">
+						<p>from Scala*: <strong>https://www.linkedin.com/in/orium/</strong></p>
+						<p style="font-size: 35%;">*not tested or benchmarked, but cool to see.</p>
+ 
+						<!-- <img src="sousa1.png"/> -->
+						<!-- <img src="sousa2.png"/> -->
+						<img src="sousa3.png"/>
+
+					</section>
+
+
+			    </section>
+
+
+				<section>
+					<h1>That's all folks.</h1>
+				</section>
 
 
 

@@ -1,0 +1,40 @@
+drwxr-xr-x 1 daniel.parreira 1049089    0 Nov  7 12:24 
+drwxr-xr-x 1 daniel.parreira 1049089    0 Nov  7 12:25 
+
+=====DONE=====
+
+portal/
+
+presentations-service/ // nothing to merge
+
+mim-service/ // really simple merge, just .gitignore changed in master
+
+inventory-service/
+// a bit of new logic brought in. Ignas requested to make merge. Did it myself and took changes from adbroker-free and ignored master since it was a kind of copy-paste to work in master as well
+commit b155288b8de362ef4ba24bf06e56c3eaf18aaab9 (origin/master, origin/HEAD)
+Author: ignas.kairys <ignas.kairys@mirriad.com>
+Date:   Tue Sep 25 11:43:38 2018 +0100
+
+    EN-847: fix in 'master'
+
+inventory-ingest-service/ // up-to-date and won't be used anymore anyways
+
+event-store-service/
+// just one commit and merged fine
+commit 17d870bbd68f893d0416bbf18fc2b403e254b493 (origin/master, origin/HEAD)
+Author: nuno.maggiolly <nuno.maggiolly@mirriad.com>
+Date:   Fri Sep 14 10:46:44 2018 +0100
+
+    EN-866 - Added a migration to create new organisation created events which link the content owner resource sets with the organisations
+
+delivery-reporting-service/
+// straight forward merge, mostly deps and gitignore
+
+data-generator-app/
+// normal merge, but 3/4 migrations done on each branch independently so now they have kind of the same numbers which makes it look a bit dodgy
+
+content-service/
+// by far, as expected the hardest merge. required fixing some tests and digging some deleted files from master branch. all tests passing now and should be good, but this needs extensive testing.
+
+content-app/
+// 
