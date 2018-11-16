@@ -337,6 +337,7 @@
 							{\displaystyle\mathop{{{{\forall}}}}_{I \in {S_{CC}}_{j}}}
 							f({S_{CC}}_{j} \setminus \{I\})
 							\end{aligned}\right)
+							,\\
 	                		, & S_{CC} \neq \emptyset   \\
 							\end{cases} 
 						$$
@@ -396,10 +397,9 @@
 							 max
 							\left(\begin{aligned}
 							
-							f({S_{CC}}_{j} \setminus \{I_1\})
-							,
-							I_1 \cup f({S_{CC}}_{j} \setminus \{I_1\})
-
+							&f({S_{CC}}_{j} \setminus \{I_1\})
+							,\\
+							I_1 \cup &f({S_{CC}}_{j} \setminus \{I_1\} \setminus \{I_x , x != I_1 \land intersects(I_1, x)\}  )
 							\end{aligned}\right)
 	                		, & S_{CC} \neq \emptyset   \\
 							\end{cases} 
@@ -407,10 +407,10 @@
 						</p>
 
 						<footer>
-							<p style="font-size: 35%;">https://en.wikipedia.org/wiki/Disjoint-set_data_structure</p>
+							<p style="font-size: 35%;">Yes, maths are mega-dodgy.</p>
 						</footer>
 
-						<p>Roughly 75% performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
+						<p>Roughly 'very many big' performance gain <span style="font-size: 50%">${}^{\mbox{citation needed}}$</span></p>
 					</section>
 
 
