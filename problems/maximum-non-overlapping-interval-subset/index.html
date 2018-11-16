@@ -23,7 +23,7 @@
 	</head>
 	<body>
 		<div class="reveal">
-			<div class="slides">
+			<div class="slides" style="min-width: 1200px;">
 				<!-- <section data-external="pages/cover.html"> </section> -->
 				<!-- <section data-external="pages/languages.html"> </section>
 				<section data-external="pages/pojo.html"> </section>
@@ -36,6 +36,9 @@
 				<section>
 					<h2>Will it <strike>blend</strike> compute?</h2>
 					<h5>Finding the optimal permutation of overlapping segments for maximum non-overlapping yield</h5>
+
+					<p style="font-size: 30%;">Also, wouldn't be surprised if there are wrong stuff here... But as far as it was empirically tested, it should be really the optimal.</p>
+					<p style="font-size: 15%;">I hope.</p>
 				</section>
 
 				<section>
@@ -50,7 +53,7 @@
 						A scene:
 						<ul>
 							<li>Defined by a start and end frame (inclusive)</li>
-							<li>A special "score" whoose calculation is outside of this scope.</li>
+							<li>A special "score" whose calculation is outside of this scope.</li>
 						</ul>
 					</section>
 
@@ -147,7 +150,7 @@
 				<section>
 					<h3>Modeling v2 - Decomposing D&C</h3>
 
-					<section style="font-size: 50%;">
+					<section style="font-size: 60%;">
 						<p>Given $ S_n = \{I_1, ..., I_n\}\\$</p>
 
 						<p class="fragment">
@@ -226,9 +229,9 @@
 						--f{B,D}
 						--f{C,D}
 						-->
-						<img src="repeated-states.png"/>
+						<img style="max-height: 150px;" src="repeated-states.png"/>
 
-						<p>This is a tiny example! But almost half of the states are duplicated. /r/theydidthemath</p>
+						<p style="font-size: 75%;">This is a tiny example! But almost half of the states are duplicated. </p>
 
 						<div class="fragment">
 							<p><strong>Solution:</strong> Store the sub-solutions for each sub-problem and only compute it not previously computed.</p>
@@ -286,12 +289,12 @@
 					</section>
 
 					<section style="font-size: 80%;">
-						<img src="graph_dc.png"/>
+						<img style="max-height: 200px;" src="graph_dc.png"/>
 
-						<p><strong>disconnected components</strong></p> 
+						<p><strong style="color:red;">disconnected components</strong></p> 
 						<p>Nodes that are isolated $=>$ automatically part of the solution</p>
 
-						<p><strong>connected components</strong></p>
+						<p><strong style="color:red;">connected components</strong></p>
 						<p>Connected nodes $=>$ at least one of them cannot be part of the solution</p>
 
 						<p>So we have to test all permutations of one removal</p>
@@ -301,15 +304,15 @@
 					<section style="font-size: 80%;">
 						<p>How to find all connected/disconnected components?</p>
 
-						<p>A data-structure called "union-find" allows us to do exactly this.</p>
-						<p>It is used in Tarjan's algorithm used to find strongly-connected components (we don't need this) and in Kruskal's algorithm (minimum spanning tree).</p>
+						<p>A data-structure called <strong  style="color:red;">"union-find"</strong> allows us to do exactly this.</p>
+						<p>It is used in Tarjan's algorithm used to find strongly-connected components (we don't need this) and in Kruskal's algorithm (MST).</p>
 
 						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/UnionFindKruskalDemo.gif/250px-UnionFindKruskalDemo.gif"/>
 
 						<p>With this knowledge we can perfect our solution further</p>
 					</section>
 
-					<section style="font-size: 50%;">
+					<section style="font-size: 60%;">
 
 						<p>Given $$ 
 							\begin{aligned}
@@ -319,7 +322,7 @@
 							\end{aligned}
 						$$</p>
 
-						<p>
+						<p class="fragment">
 						$$f(S_n) = 
 							\begin{cases} 
 							\emptyset, & |S| = \emptyset \\
@@ -337,7 +340,7 @@
 							{\displaystyle\mathop{{{{\forall}}}}_{I \in {S_{CC}}_{j}}}
 							f({S_{CC}}_{j} \setminus \{I\})
 							\end{aligned}\right)
-							,\\
+							
 	                		, & S_{CC} \neq \emptyset   \\
 							\end{cases} 
 						$$
@@ -357,20 +360,34 @@
 				<section>
 
 					<section>
-						<h1>(last) Optimization time</h1>
-						<p>Still too many damn permutations!</h1>
+						<h1><span style="font-size: 25%;">(last)</span>Optimization time</h1>
+						<h4>Dynamic Programming</h4>
+						<p style="font-size: 75%;">Still too many damn permutations!</h1>
 					</section>
-					<section>
 
-						<p>When we have over 20~30 overlapping segments in the $S_{CC}$, there are still too many states to explore that will take too much time.</p>
+					<section>
+						<h1>Dynamic who..?</h1>
+						<p style="font-size: 25%;">(also, blatently stackoverflow'd from wikipedia at https://en.wikipedia.org/wiki/Dynamic_programming)</p>
+						<p>There are two key attributes that a problem must have in order for dynamic programming to be applicable: <strong style="color:red;">optimal substructure</strong> and <strong style="color:red;">overlapping sub-problems</strong>.</p>
+
+						<p style="font-size: 35%;">If a problem can be solved by combining optimal solutions to non-overlapping sub-problems, the strategy is called "divide and conquer" instead. This is why merge sort and quick sort are not classified as dynamic programming problems.</p>
+
+						<p class="fragment" style="font-size: 75%;"><strong style="color:red;">Optimal substructure</strong> means that the solution to a given optimization problem can be obtained by the combination of optimal solutions to its sub-problems.</p>
+
+						<p class="fragment" style="font-size: 75%;"><strong style="color:red;">Overlapping sub-problems*</strong> means that the space of sub-problems must be small, that is, any recursive algorithm solving the problem should solve the same sub-problems over and over, rather than generating new sub-problems. Dynamic programming takes account of this fact and tries solves each sub-problem only once.</p>
+
+
+					</section>
+
+					<section>
+						<p>When we have over 20~30 overlapping segments in the $S_{CC}$, there are still too many states (mostly repeated ones) to explore that will take too much time.</p>
 
 						<p><strong>We need to model the problem differently.</strong></p>
 
-						<p>Instead of generating the possible permutations for removal, we are just going to pick the best from taking the first interval in the set or NOT.</p>
-
+						<p class="fragment">Instead of generating the possible permutations for removal in $S_{CC}$, we going to transform it into a binary choice: either take the first interval or drop it.</p>
 					</section>
 
-					<section style="font-size: 55%;">
+					<section style="font-size: 65%;">
 
 						<p>Given $$ 
 							\begin{aligned}
@@ -381,7 +398,7 @@
 							\end{aligned}
 						$$</p>
 
-						<p>
+						<p class="fragment">
 						$$f(S_n) = 
 							\begin{cases} 
 							\emptyset, & |S| = \emptyset \\
@@ -407,7 +424,9 @@
 						</p>
 
 						<footer>
-							<p style="font-size: 60%;">Note that $I_x \in {S_{CC}}_{j}$ automatically includes $I_1$</p>
+							<p style="font-size: 60%;">Note that $\{I_x \in {S_{CC}}_{j}, intersects(I_1, I_x)\}$ automatically includes $I_1$</p>
+
+						<hr>
 							<p style="font-size: 35%;">Yes, maths are mega-dodgy.</p>
 						</footer>
 
